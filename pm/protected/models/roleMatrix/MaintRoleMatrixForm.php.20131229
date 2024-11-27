@@ -1,0 +1,83 @@
+<?php
+class MaintRoleMatrixForm extends CFormModel {
+	
+	public static $columns = array(
+		'customer',
+		'prod_sn',
+		'status',
+		'no_jp',
+		'factory_no',
+		'made',
+		'model',
+		'model_no',
+		'year',
+		'item_group',
+		'material',
+		'product_desc',
+		'product_desc_ch',
+		'product_desc_jp',
+		'accessory_remark',
+		'company_remark',
+		'pcs',
+		'colour',
+		'colour_no',
+		'supplier',
+		'molding',
+		'moq',
+		'cost',
+		'kaito',
+		'other',
+		'purchase_cost',
+		'business_price',
+		'auction_price',
+		'kaito_price',
+		'buy_date',
+		'receive_date',
+		'factory_date',
+		'pack_remark',
+		'order_date',
+		'progress',
+		'receive_model_date',
+		'person_in_charge',
+		'state',
+		'ship_date',
+		'market_research_price',
+		'yahoo_produce',
+		'produce_status',
+		'is_monopoly',
+		'user_management',
+		'export_excel'
+	);
+	
+	public static $non_columns = array(
+		'user_management',
+		'export_excel'
+	);
+	
+	public $hasRight;
+	
+	public function saveAction($post) {
+		$hasRights = $post['hasRight'];
+
+		// Truncate role matrix
+		$command = Yii::app()->db->createCommand();
+		$command->truncateTable('role_matrix');
+			
+		foreach ($hasRights as $role_code=>$columns) {
+			foreach($columns as $column=>$value) {
+				$roleMatrix = new RoleMatrix();
+				$roleMatrix->role_code = $role_code;
+				
+				if (!in_array($column, MaintRoleMatrixForm::$non_columns)) {
+					$roleMatrix->table_name = 'product_master';
+					$roleMatrix->column_name = $column;
+				} else {
+					$roleMatrix->table_name = $column;
+					$roleMatrix->column_name = $column;
+				}
+				
+				$roleMatrix->save();
+			}
+		}
+	}
+}

@@ -1,0 +1,19 @@
+<?php
+Yii::import('application.models.email.*');
+
+class EmailController extends Controller {
+	public function actionList() {
+		$form = new EmailForm();
+		$form->populate($_POST);
+
+		if ($form->action == 'save') {
+			$form->save();
+		} else if ($form->action == 'delete') {
+			$form->delete();
+		} else {
+			$form->init();
+		}
+		
+		$this->render('list', array('model'=>$form));
+	}
+}

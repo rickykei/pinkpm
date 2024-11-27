@@ -1,0 +1,51 @@
+<?php
+
+class ProductMaintForm extends CFormModel {
+	
+	public $message;
+
+	public function update($post) {
+		$model = $this->loadProductMaster($post['ProductMaster']['id']);
+		$model->attributes = $post['ProductMaster'];
+		
+		$origModel = $this->loadProductMaster($post['ProductMaster']['id']);
+			
+		if ($model->save()) {
+			// Add change log
+			foreach ($origModel->attributes as $columnName=>$value) {
+				if ($model->$columnName != $value) {
+					$log = new ProductChangeLog();
+					$log->prod_sn = $model->prod_sn;
+					$log->column_name = $columnName;
+					$log->old_value = $value;
+					$log->new_value = $model->$columnName;
+					$log->create_by = Yii::app()->user->name;
+					if (!$log->save()) {
+						var_dump($log->errors);
+					}
+				}
+			}
+			
+			$message = '&#29986;&#21697;S/N ['.$model->prod_sn.'] is updated successfully!'; // S/N [XXX] is updated successfully!
+			return true;
+		}
+		else {
+			$message = 'Fail to update product!';
+			return false;
+		}
+	}
+	
+	private function loadProductMaster($id) {
+		if (GlobalFunction::isSupplier()) {
+			$model = ProductMaster::model()->findByAttributes(array('id'=>$id, 'supplier'=>GlobalFunction::getUserSupplier()));
+		}
+		else {
+			$model = ProductMaster::model()->findByAttributes(array('id'=>$id));
+		}
+	
+		if ($model === null) {
+			throw new CHttpException(404,'The requested page does not exist.');
+		}
+		return $model;
+	}
+}

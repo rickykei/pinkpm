@@ -1,0 +1,48 @@
+<?php
+Yii::import('application.models.roleMatrix.*');
+
+class RoleMatrixController extends Controller {
+	
+	public function filters() {
+		return array(
+				'accessControl'
+		);
+	}
+	
+	public function filterAccessControl($filterChain) {
+		if (!GlobalFunction::isAdmin()) {
+			$this->redirect(Yii::app()->createUrl('site/noPermission'));
+		}
+		else {
+			$filterChain->run();
+		}
+	}
+	
+	public function actionIndex($msg=NULL) {
+		$model = new MaintRoleMatrixForm();
+		$model->hasRight = array();
+		
+		$roles = Role::model()->findAll("role_code <> 'AD' ");
+		foreach ($roles as $role) {
+			$model->hasRight[$role->role_code] = array();
+		}
+		
+		$roleMatrixes = RoleMatrix::model()->findAll();
+		foreach ($roleMatrixes as $roleMatrix) {
+			$model->hasRight[$roleMatrix->role_code][$roleMatrix->column_name] = 'Y';
+		}
+		
+		$this->render('maint', array('model'=>$model, 'roles'=>$roles, 'msg'=>$msg));
+	}
+	
+	public function actionUpdate() {
+		$msg = array();
+		
+		if (isset($_POST['action'])) {
+			$form = new MaintRoleMatrixForm();
+			$form->saveAction($_POST);
+			$msg = array('success'=>'The role matrix is updated successfully!');
+		}
+		$this->actionIndex($msg);
+	}
+}

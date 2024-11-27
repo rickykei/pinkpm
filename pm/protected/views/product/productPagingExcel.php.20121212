@@ -1,0 +1,51 @@
+<? if (!isset($items)) {?>
+
+<? } else if ($items == NULL || sizeOf($items) == 0) {?>
+	<div class="scroll" id="prod_page">
+		No product found!
+	</div>
+<? } else {
+	$baseUrl = Yii::app()->request->baseUrl;
+?>
+	<? $this->widget('SimplaPager', array('pages'=>$pages)); ?>
+
+		<table class="product-excel-style" width="width: 1000px;">
+			<tr>
+				<th>&nbsp;</th>
+				<th width="30"><? echo Yii::t('product_message', 'prod_sn'); ?></th>
+				<th><? echo Yii::t('product_message', 'customer'); ?></th>
+				<th><? echo Yii::t('product_message', 'status'); ?></th>
+				<th><? echo Yii::t('product_message', 'no_jp'); ?></th>
+				<th><? echo Yii::t('product_message', 'factory_no'); ?></th>
+				<th><? echo Yii::t('product_message', 'model'); ?></th>
+				<th><? echo Yii::t('product_message', 'model_no'); ?></th>
+				<th><? echo Yii::t('product_message', 'year'); ?></th>
+				<th><? echo Yii::t('product_message', 'material'); ?></th>
+				<th><? echo Yii::t('product_message', 'product_desc'); ?></th>
+				<th width="100"><? echo Yii::t('product_message', 'accessory_remark'); ?></th>
+				<th width="100"><? echo Yii::t('product_message', 'company_remark'); ?></th>
+				<th><? echo Yii::t('product_message', 'pcs'); ?></th>
+				<th><? echo Yii::t('product_message', 'colour'); ?></th>
+			</tr>
+		<? foreach($items as $product) { ?>
+			<tr>
+				<td><input type="button" value="<? echo Yii::t('common_message', 'product_detail'); ?>" onclick="javascript:goUpdate(<?=$product->id ?>)"/></td>
+				<td><?=$product->prod_sn ?></td>
+				<td><?=$product->customer ?></td>
+				<td><?=$product->status ?></td>
+				<td><?=$product->no_jp ?></td>
+				<td><?=$product->factory_no ?></td>
+				<td><?=$product->model ?></td>
+				<td><?=$product->model_no ?></td>
+				<td><?=$product->year ?></td>
+				<td><?=$product->material ?></td>
+				<td><?=$product->product_desc ?></td>
+				<td><?=$product->accessory_remark ?></td>
+				<td><?=$product->company_remark ?></td>
+				<td><?=$product->pcs ?></td>
+				<td><?=$product->colour ?></td>
+			</tr>
+		<? }?>
+		</table>
+
+<? } ?>
